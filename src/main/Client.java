@@ -1,58 +1,46 @@
 package main;
 
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.Random;
 
 import rmi.SiteItf;
 
 public class Client {
-    public static void main(String[] argv) throws RemoteException {
-    	ArrayList<SiteItf> elements = new ArrayList<SiteItf>();
+    public static void main(String[] args) throws RemoteException, MalformedURLException {
+    	ArrayList<SiteItf> stubs = new ArrayList<SiteItf>();
     	
-    	int port = 1234;
+    	String [] names = Naming.list("rmi://localhost:1099");
+    	SiteItf racine = null;
+    	Random r = new Random();
+		
+		/* Récupération des objets distants. */
+    	for (String name : names) {
+    		System.out.println(name);
+    		
+    		try {
+				SiteItf remote = (SiteItf) Naming.lookup(name);
+				stubs.add(remote);
+				if (name.equals("//localhost:1099/racine"))
+					racine = remote;
+			} catch (NotBoundException e) {
+				System.err.println("Object " + name + " not bound!");
+			}
+    	}
     	
-    	Registry memory;
+    	if (racine != null) {
+    		String rootMessage = "Message depuis la racine";
+    		System.out.println("Envoi de : " + rootMessage);
+    		racine.propagateData(rootMessage);
+    	}
     	
-    	
-    	
-        try {	
-        	memory = LocateRegistry.getRegistry(port);
-        	for(int i = 1 ; i <= 6 ; i++){
-	            elements.add((SiteItf) memory.lookup("ID" + i));
-        	}
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-
-        elements.get(0).addSon(elements.get(1));
-        elements.get(1).setFather(elements.get(0));
-        elements.get(0).addSon(elements.get(4)); 
-        elements.get(4).setFather(elements.get(0));
-        elements.get(1).addSon(elements.get(2)); 
-        elements.get(2).setFather(elements.get(1));
-        elements.get(1).addSon(elements.get(3)); 
-        elements.get(3).setFather(elements.get(1));
-        elements.get(4).addSon(elements.get(5)); 
-        elements.get(5).setFather(elements.get(4));
-
-        elements.get(0).sendData("Test");
-        try {
-			Thread.sleep(1);
-		} catch (InterruptedException e) 
-		{
-			System.err.println("Error from the Thread");
-			e.printStackTrace();
-		}
-              
-        System.out.println("TESTING ...");
-        
-        for(int i = 0 ; i < elements.size() ; i++)
-        {
-        	System.out.println(elements.get(i).getData());
-        }
-    }	
+    	String randomMessage = "Message depuis un noeud aléatoire";
+    	SiteItf randomRemote = stubs.get(r.nextInt(stubs.size()));
+    	System.out.println("Envoi de : " + randomMessage);
+    	randomRemote.propagateData(randomMessage);
+    }
 }
