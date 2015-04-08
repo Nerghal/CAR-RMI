@@ -1,8 +1,11 @@
+package main;
 
 
 import java.rmi.*;
 import java.rmi.registry.*;
 import java.util.*;
+
+import rmi.SiteItf;
 
 public class Client {
     public static void main(String[] argv) throws RemoteException {
