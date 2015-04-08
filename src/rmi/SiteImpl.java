@@ -1,6 +1,6 @@
 package rmi;
-import java.rmi.*;
-import java.util.*;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public class SiteImpl implements SiteItf
 {
