@@ -22,8 +22,9 @@ public interface SiteItfGraph extends SiteItf {
 	public String getId() throws RemoteException;
 	
 	/**
-	 * Effectue la propagation parmi les fils de l'objet courant.
+	 * Effectue la propagation parmi les voisins de l'objet courant.
 	 * @param data les données à propager
+	 * @param list la liste des objets ayant déjà reçus le message
 	 * @throws RemoteException
 	 */
 	public void propagateToNeighbour(final String data, final ArrayList<SiteItfGraph> list) throws RemoteException;
