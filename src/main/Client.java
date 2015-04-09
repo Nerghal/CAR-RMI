@@ -19,7 +19,7 @@ public class Client {
     	if (args.length != 1) {
     		System.err.println("Usage: Client nb_messages");
     		
-    		System.exit(1);
+    		return;
     	}
     	
     	ArrayList<SiteItf> stubs = new ArrayList<SiteItf>();

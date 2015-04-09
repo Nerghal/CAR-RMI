@@ -24,7 +24,7 @@ public class ServerTree {
 	 */
 	public static void main(String[] args) throws RemoteException, MalformedURLException {
 		if (args.length < 1 || args.length > 2) {
-			System.err.println("Erreur arguments "+args.length);
+			System.err.println("Erreur arguments");
 			System.err.println("Usage : ServerTree name_object_to_create [name_father]");
 			
 			System.exit(1);

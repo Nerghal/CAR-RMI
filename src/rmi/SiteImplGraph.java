@@ -23,10 +23,10 @@ public class SiteImplGraph extends UnicastRemoteObject implements SiteItfGraph
 		return this.data;
 	}
 
-	public void addNeighbour(SiteItfGraph newNeighbour) throws RemoteException {
+	public void addNeighbour(SiteItfGraph newNeighbour) throws RemoteException {			
 		if (!listOfNeighbours.contains(newNeighbour)) {
-			newNeighbour.addNeighbour(this);
 			this.listOfNeighbours.add(newNeighbour);
+			newNeighbour.addNeighbour(this);
 		}
 	}
 
@@ -47,12 +47,11 @@ public class SiteImplGraph extends UnicastRemoteObject implements SiteItfGraph
 	}
 	
 	public void propagateToNeighbour(final String data, final ArrayList<SiteItfGraph> list) throws RemoteException {
-		
-		if (list.contains(this)) {
+		if (list.contains(this))
 			return;
-		}
 		
 		list.add(this);
+		System.out.println(this.id + " receives the message : \"" + data + "\"");
 
 		for (final SiteItfGraph neighbour : listOfNeighbours) {
 			System.out.println(this.id + " propagates to " + neighbour.getId() + " the following message : \"" + data + "\"");
