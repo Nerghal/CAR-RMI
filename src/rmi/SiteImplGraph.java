@@ -11,57 +11,60 @@ public class SiteImplGraph extends UnicastRemoteObject implements SiteItfGraph
 	 */
 	private static final long serialVersionUID = -1971677018818545300L;
 	private ArrayList<SiteItfGraph> listOfNeighbours;
-	private ArrayList<SiteItfGraph> listOfDone;
-	private String id,data;
+	private String id;
+	private String data;
 
-	public SiteImplGraph(String id) throws RemoteException
-	{
+	public SiteImplGraph(String id) throws RemoteException {
 		this.listOfNeighbours = new ArrayList<SiteItfGraph>();
 		this.id = id;
 	}
 	
-	public String getData() throws RemoteException 
-	{
+	public String getData() throws RemoteException {
 		return this.data;
 	}
 
-	public void addNeighbour(SiteItfGraph newNeighbour) throws RemoteException
-	{
+	public void addNeighbour(SiteItfGraph newNeighbour) throws RemoteException {
 		if (!listOfNeighbours.contains(newNeighbour)) {
-		newNeighbour.addNeighbour(this);
-		this.listOfNeighbours.add(newNeighbour);
+			newNeighbour.addNeighbour(this);
+			this.listOfNeighbours.add(newNeighbour);
 		}
 	}
 
 	
-	public ArrayList<SiteItfGraph> getNeighbours() throws RemoteException
-	{
-		return this.listOfNeighbours;
+	public ArrayList<SiteItfGraph> getNeighbours() throws RemoteException {
+		ArrayList<SiteItfGraph> l = new ArrayList<SiteItfGraph>(this.listOfNeighbours);
+		return l;
 	}
 	
-	public void propagateData(final String data) throws RemoteException 
-	{	
+	public void propagateData(final String data) throws RemoteException {	
 		System.out.println(this.id + " initiates propagation with the following message : \"" + data + "\"");
 		this.data = data;
-		this.propagateToNeighbour(data,listOfDone);
+		this.propagateToNeighbour(data, new ArrayList<SiteItfGraph>());
 	}
 
-	public String getId() 
-	{
+	public String getId() throws RemoteException {
 		return this.id;
 	}
 	
-	private void propagateToNeighbour(final String data, ArrayList<SiteItfGraph> list) {
+	public void propagateToNeighbour(final String data, final ArrayList<SiteItfGraph> list) throws RemoteException {
+		
+		if (list.contains(this)) {
+			return;
+		}
+		
+		list.add(this);
+
 		for (final SiteItfGraph neighbour : listOfNeighbours) {
-			if (!listOfDone.contains(neighbour)) {
-			System.out.println(this.id + " propagates to " + ((SiteImplGraph) neighbour).id + " the following message : \"" + data + "\"");
-			this.listOfDone.add(neighbour);
+			System.out.println(this.id + " propagates to " + neighbour.getId() + " the following message : \"" + data + "\"");
 			new Thread() {
 				public void run() {
-					((SiteImplGraph) neighbour).propagateToNeighbour(data,listOfDone);
+					try {
+						neighbour.propagateToNeighbour(data, list);
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
 				}
 			}.start();
-			}
 		}
 	}
 
