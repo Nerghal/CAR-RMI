@@ -4,16 +4,35 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Représente un objet RMI relié à ses pairs dans une topologie de 
+ * type arbre. La communication est uniquement descendante. 
+ *
+ */
 public class SiteImplTree extends UnicastRemoteObject implements SiteItfTree
 {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1971677018818545300L;
+	/**
+	 * Contient la liste des fils de l'objet dans l'arbre.
+	 */
 	private List<SiteItfTree> listOfSons;
+	/**
+	 * L'id utilisé pour le bind de l'objet RMI.
+	 */
 	private String id;
+	/**
+	 * Les données dernièrement transférées.
+	 */
 	private String data;
 
+	/**
+	 * Construit une nouvelle instance de SiteImplTree sans fils.
+	 * @param id 
+	 * @throws RemoteException
+	 */
 	public SiteImplTree(String id) throws RemoteException {
 		this.listOfSons = new ArrayList<SiteItfTree>();
 		this.id = id;
@@ -27,6 +46,10 @@ public class SiteImplTree extends UnicastRemoteObject implements SiteItfTree
 		this.listOfSons.add(newSon);
 	}
 	
+	/**
+	 * Déclenche la propagation des données d'un nouveau message passé en 
+	 * paramètre. Méthode appelée par le client.
+	 */
 	public void propagateData(final String data) throws RemoteException  {	
 		System.out.println(this.id + " initiates propagation with the following message : \"" + data + "\"");
 		this.data = data;
@@ -37,6 +60,10 @@ public class SiteImplTree extends UnicastRemoteObject implements SiteItfTree
 		return this.id;
 	}
 	
+	/**
+	 * Déclenche la propagation concurrente du message passé en paramètre 
+	 * parmi les fils de l'objet courant.
+	 */
 	public void propagateToSons(final String data) throws RemoteException {
 		System.out.println(this.id + " receives the message : \"" + data + "\"");
 		
